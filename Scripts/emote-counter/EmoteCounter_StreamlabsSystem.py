@@ -13,7 +13,6 @@ import time
 #---------------------------------------
 ScriptName = "Emote Counter"
 Website = "https://lion-blanc.com"
-Description = "Test"
 Creator = "DLLB"
 Version = "1.0.0"
 Description = "Count Message and trigger a sound if a strike is done in a certain defined time"
@@ -54,6 +53,7 @@ class Settings:
             self.EmoteMessage = "drake62Gg"
             self.EmoteTreshold = 10
             self.EventCooldown = 1
+            self.EventTriggerMessage = ""
 
     # Reload settings on save through UI
     def Reload(self, data):
@@ -126,21 +126,22 @@ def Execute(data):
             if data.UserName.lower() == word.lower():
                 return
 
-        process(data.Message)
+        process(data.Message, data.UserName)
 
         global COUNT
 
         if (COUNT>=MySet.EmoteTreshold):
             EnqueueAudioFile(MySet.Sound)
+            Parent.SendStreamMessage(MySet.EventTriggerMessage)
             reset()
 
         lastMessage = time.time()
 
-def process(message):
+def process(message, username):
     global COUNT, lastMessage
     split = message.strip().split(" ")
     if (MySet.EmoteMessage in split):
-        COUNT += 1
+        COUNT += 1            
     elif (lastMessage + MySet.EventCooldown*60) >= time.time():
         reset()
 
