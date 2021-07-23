@@ -2,15 +2,15 @@
 # Libraries and references
 #---------------------------------------
 import os
+import random
 
 #---------------------------------------
 # [Required] Script information
 #---------------------------------------
 ScriptName = "Chat Message Counter"
 Website = "https://lion-blanc.com"
-Description = "Test"
 Creator = "DLLB"
-Version = "1.0.0"
+Version = "1.1.0"
 Description = "Count Message and trigger a funny line for some numbers"
 
 #---------------------------------------
@@ -18,11 +18,12 @@ Description = "Count Message and trigger a funny line for some numbers"
 #---------------------------------------
 """
 1.0 - Initial release
+1.1 - Add reward.txt support
 """
 #---------------------------------------
 # Variables
 #---------------------------------------
-
+rewards = open(os.path.abspath(__file__) + '/../reward.txt').read().splitlines()
 
 #---------------------------------------
 # Settings functions
@@ -39,7 +40,8 @@ def Init():
     """Data on Load, required function"""
     global count, eventIds
     count = 0
-    eventIds = [1, 2, 5]
+    eventIds = [1, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 69, 666]
+    random.shuffle(rewards)
 
 def Execute(data):
     """Required Execute Data function"""
@@ -47,10 +49,11 @@ def Execute(data):
 
     if data.IsChatMessage():
         count += 1
-        print(count)
 
-        if count in eventIds:
-            talk(data.UserName)
+        talk(data.UserName)
+        # print(randnum())
+        # if count in eventIds:
+        #     talk(data.UserName)
 
 def Tick():
     return
@@ -61,12 +64,14 @@ def Tick():
 #---------------------------------------
 def talk(username):
     global count
-    reward = "C'est le $count message tu remportes : ".replace("$count", str(count))
+    reward = "C'est le $count message $user tu remportes : ".replace("$count", str(count)).replace("$user", username)
 
-
-    if count == 2:
-        Parent.SendStreamMessage(reward + "NICE uwu $user".replace("$user", username))
+    if count == 69:
+        Parent.SendStreamMessage(reward + "NICE uwu")
         return
-
-    # Pick a random reward
-    Parent.SendStreamMessage(reward + "Un message bien encourageant $user".replace("$user", username))
+    if count == 666:
+        Parent.SendStreamMessage(reward + "Un ban")
+        return
+    
+    Parent.SendStreamMessage(reward + rewards.pop())
+    Parent.SendStreamMessage(str(len(rewards)))
